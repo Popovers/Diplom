@@ -1,0 +1,169 @@
+* {
+    -fx-primary-color: #2196F3;
+    -fx-secondary-color: #4CAF50;
+    -fx-accent-color: #FF5722;
+}
+
+/* Общий стиль */
+.root {
+    -fx-background-color: #FAFAFA;
+    -fx-font-family: 'Roboto', sans-serif;
+    -fx-spacing: 10;
+    -fx-padding: 15;
+}
+
+/* TabPane */
+.tab-pane {
+    -fx-tab-min-width: 120; /* Ширина вкладок */
+}
+
+.tab-pane .tab-header-area {
+    -fx-side: left; /* Расположение вкладок слева */
+    -fx-background-insets: 0, 1;
+    -fx-padding: 0 0 0 10;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-padding: 10px 20px;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: rgba(33, 150, 243, 0.2);
+}
+/* Кнопки */
+.button {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 15px;
+    -fx-padding: 6px 12px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: derive(-fx-primary-color, -20%);
+}
+
+/* Текстовые поля */
+.text-field, .text-area, .password-field {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-primary-color;
+    -fx-border-radius: 3px;
+    -fx-padding: 3px 6px;
+    -fx-font-size: 12px;
+}
+
+.text-field:focused, .text-area:focused, .password-field:focused {
+    -fx-border-color: -fx-accent-color;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-primary-color;
+    -fx-border-radius: 3px;
+    -fx-padding: 3px 6px;
+    -fx-font-size: 12px;
+    -fx-pref-width: 200px; /* Ширина комбобокса */
+}
+
+.combo-box:focused {
+    -fx-border-color: -fx-accent-color;
+}
+
+/* Popup */
+.combo-box .combo-box-popup .list-view {
+    -fx-background-color: white; /* Белый фон выпадающего списка */
+}
+
+/* TableView */
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-spacing: 10;
+}
+
+
+.table-view .column-header {
+    -fx-background-color: -fx-accent-color;
+    -fx-text-fill: white;
+    -fx-padding: 0; /* Убираем внутренние отступы */
+}
+
+.table-view .column-header:first-child {
+    -fx-background-radius: 7px 0 0 7px;
+}
+
+.table-view .column-header:last-child {
+    -fx-background-radius: 0 7px 7px 0;
+}
+
+
+
+.table-view .column-header-background .label {
+    -fx-text-fill: white;
+
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 6px;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f5f5f5;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #e0e0e0;
+}
+
+/* Выделенный элемент таблицы */
+.table-view:focused .table-row-cell:filled:selected {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+}
+.header-color .column-header-background {
+  -fx-background-color: #00FF00; /* Зеленый цвет */
+}
+
+/* ListView */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-primary-color;
+    -fx-border-radius: 3px;
+    -fx-padding: 3px;
+}
+
+.list-view .list-cell {
+    -fx-padding: 3px 6px;
+    -fx-background-color: transparent;
+}
+
+.list-view .list-cell:filled:hover {
+    -fx-background-color: rgba(33, 150, 243, 0.2);
+}
+
+/* Текстовые поля и ComboBox */
+.text-field, .text-area, .password-field, .combo-box {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-primary-color;
+    -fx-border-radius: 3px;
+    -fx-padding: 3px 6px;
+    -fx-font-size: 12px;
+    -fx-pref-width: 200px; /* Одинаковая ширина для текстовых полей и комбобокса */
+}
