@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane stylesheets="@style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.diplom.LoginController">
+    <children>
+        <VBox alignment="CENTER" layoutX="15.0" layoutY="15.0" spacing="20.0" style="-fx-background-color: #FFFF;">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+
+            <Label text="Авторизация">
+                <font>
+                    <Font name="System Bold" size="19.0" />
+                </font>
+            </Label>
+            <TextField fx:id="usernameField" promptText="Логин" />
+            <PasswordField fx:id="passwordField" promptText="Пароль" />
+
+            <Button onAction="#onLoginButtonClick" prefHeight="26.0" prefWidth="92.0" text="войти" textFill="WHITE" />
+        </VBox>
+    </children>
+</Pane>
