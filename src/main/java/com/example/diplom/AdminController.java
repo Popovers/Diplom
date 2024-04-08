@@ -132,7 +132,7 @@ public class AdminController {
 
 
 
-
+//Метод загрузки данных из БД в комбобокс
     private void loadRolesInComboBox() {
     List<String> roles = new ArrayList<>();
     roles.add("Админ");
@@ -141,6 +141,7 @@ public class AdminController {
     newUserRoleComboBox.getItems().setAll(roles);
 }
 
+//Кнопка создания нового пользователя
     public void onCreateUserButtonClick() {
         // Получение данных из текстовых полей
         String username = newUsernameField.getText();
@@ -191,6 +192,7 @@ public class AdminController {
         }
     }
 
+//Кпопка обновления данных пользователя
     public void onSaveUserChangesButtonClick() {
         // Получение данных из текстовых полей
         String username = editUsernameField.getText();
@@ -254,6 +256,7 @@ public class AdminController {
         }
     }
 
+//Кнопка удаления пользователя
     public void onDeleteUserButtonClick() {
         // Получение выбранного пользователя из TableView
         User selectedUser = userTableView.getSelectionModel().getSelectedItem();
@@ -302,6 +305,7 @@ public class AdminController {
         }
     }
 
+//Метод загрузки данных пользователей
     public void loadUserData() {
         ObservableList<User> userList = FXCollections.observableArrayList();
 
@@ -334,7 +338,7 @@ public class AdminController {
         }
     }
 
-
+//Метод загрузки данных проектов
     public void loadProjectData() {
         // Очистка таблицы проектов перед загрузкой данных
         projectTableView.getItems().clear();
@@ -377,6 +381,8 @@ public class AdminController {
         projectEndDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         projectBudgetColumn.setCellValueFactory(new PropertyValueFactory<>("budget"));
     }
+
+//Метод отображения ошибок
     private void showErrorDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -385,6 +391,7 @@ public class AdminController {
         alert.showAndWait();
     }
 
+//Метод загрузки данных специалистов
     private void loadSpecialistsData() {
         // Получение данных о специалистах из базы данных
         // Здесь должен быть код для загрузки данных из таблицы специалистов
@@ -398,6 +405,7 @@ public class AdminController {
         specialistsListView.getItems().setAll(specialistList);
     }
 
+//Создание нового проекта
     @FXML
     private void onCreateProjectButtonClick() {
         // Получение данных о новом проекте из текстовых полей
@@ -460,6 +468,7 @@ public class AdminController {
         }
     }
 
+//Метод отображения ошибок
     private void showWarningDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
@@ -468,6 +477,7 @@ public class AdminController {
         alert.showAndWait();
     }
 
+//Метод обновления записей проекта
     @FXML
     private void updateProject() {
         Project selectedProject = projectTableView.getSelectionModel().getSelectedItem();
@@ -516,6 +526,7 @@ public class AdminController {
         loadProjectData();
     }
 
+//Метод удаления проекта
     @FXML
     private void onDeleteProjectButtonClick() {
         Project selectedProject = projectTableView.getSelectionModel().getSelectedItem();
@@ -526,6 +537,7 @@ public class AdminController {
         }
     }
 
+//Метод удаления проекта
     private void deleteProject(Project project) {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
             String query = "DELETE FROM projects WHERE id = ?";
@@ -546,6 +558,7 @@ public class AdminController {
         }
     }
 
+    //Метод открытия окна авторизации
     private void openLoginWindow() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
@@ -558,7 +571,7 @@ public class AdminController {
         }
     }
 
-
+// Метод загрузки данных проектов
     private void loadProjectRequests() {
         // Получение данных о заявках из базы данных и добавление их в список
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
@@ -582,6 +595,7 @@ public class AdminController {
         }
     }
 
+    // Метод распределения специалистов
     @FXML
     private void assignSpecialists(ActionEvent event) {
         // Получение выбранной заявки из списка
@@ -626,6 +640,8 @@ public class AdminController {
             alert.showAndWait();
         }
     }
+
+    // Метод закрытия окна авторизации
     @FXML
     private void onCancelButtonClick() {
         // Закрытие окна формы без сохранения данных
@@ -635,6 +651,8 @@ public class AdminController {
         stage.close();
 
     }
+
+    //Инициализация класса
     public void initialize() {
         // Привязываем свойство disable кнопки createUserButton к состоянию пустоты полей
         createUserButton.disableProperty().bind(
