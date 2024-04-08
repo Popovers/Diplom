@@ -2,17 +2,32 @@ package com.example.diplom;
 
 public class ProjectRequest {
     private int id;
-    private int projectId; // Добавлено поле для идентификатора проекта
-    private int specialistId;
-    private int roleId;
+    private String projectName;
+    private String role;
     private String startDate;
     private String endDate;
+    private int roleId;
 
-    public ProjectRequest(int id, int projectId, int specialistId, int roleId, String startDate, String endDate) {
-        this.id = id;
-        this.projectId = projectId;
-        this.specialistId = specialistId;
+    public void setRoleId(int roleId) {
         this.roleId = roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    private String roleName;
+
+
+    public ProjectRequest(int id, String projectName, int roleId, String roleName, String startDate, String endDate) {
+        this.id = id;
+        this.projectName = projectName;
+        this.roleId = roleId;
+        this.roleName = roleName;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -25,28 +40,20 @@ public class ProjectRequest {
         this.id = id;
     }
 
-    public int getProjectId() {
-        return projectId;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public int getSpecialistId() {
-        return specialistId;
+    public String getRole() {
+        return role;
     }
 
-    public void setSpecialistId(int specialistId) {
-        this.specialistId = specialistId;
-    }
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getStartDate() {
@@ -63,5 +70,23 @@ public class ProjectRequest {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public int getProjectId() {
+        // Здесь должен быть ваш код для получения id проекта
+        return 0; // Пример
+    }
+
+    public void setProjectId(int projectId) {
+        // Здесь должен быть ваш код для установки id проекта
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    @Override
+    public String toString() {
+        return "Проект: " + projectName + ", Роль: " + role + ", Срок: " + startDate + " - " + endDate;
     }
 }

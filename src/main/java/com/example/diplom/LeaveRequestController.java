@@ -81,34 +81,24 @@ public class LeaveRequestController {
     }
 
     private void loadRoles() {
-        specialistComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                String selectedSpecialist = newValue;
-                roleComboBox.getItems().clear(); // Очищаем список ролей перед загрузкой новых данных
+        roleComboBox.getItems().clear(); // Очищаем список ролей перед загрузкой новых данных
 
-                // Выполняем запрос к базе данных для загрузки ролей для выбранного специалиста
-                String url = "jdbc:mysql://localhost:3306/fors";
-                String username = "root";
-                String password = "r10270707";
-                String query = "SELECT roles.name " +
-                        "FROM roles " +
-                        "INNER JOIN specialist_roles ON roles.id = specialist_roles.role_id " +
-                        "INNER JOIN specialists ON specialist_roles.specialist_id = specialists.id " +
-                        "WHERE CONCAT(specialists.first_name, ' ', specialists.last_name, ' ', specialists.middle_name) = ?";
-                try (Connection connection = DriverManager.getConnection(url, username, password);
-                     PreparedStatement statement = connection.prepareStatement(query)) {
-                    statement.setString(1, selectedSpecialist);
-                    ResultSet resultSet = statement.executeQuery();
-                    while (resultSet.next()) {
-                        String roleName = resultSet.getString("name");
-                        roleComboBox.getItems().add(roleName);
-                    }
-                } catch (SQLException e) {
-                    System.err.println("Ошибка при загрузке ролей для выбранного специалиста: " + e.getMessage());
-                }
-                roleComboBox.hide();
+        // Выполняем запрос к базе данных для загрузки всех ролей
+        String url = "jdbc:mysql://localhost:3306/fors";
+        String username = "root";
+        String password = "r10270707";
+        String query = "SELECT name FROM roles";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String roleName = resultSet.getString("name");
+                roleComboBox.getItems().add(roleName);
             }
-        });
+        } catch (SQLException e) {
+            System.err.println("Ошибка при загрузке ролей: " + e.getMessage());
+        }
+        roleComboBox.hide();
     }
 
     @FXML
@@ -170,7 +160,6 @@ public class LeaveRequestController {
     private void onSaveRequestButtonClick() {
         // Получение данных из полей формы
         String selectedProject = projectComboBox.getValue(); // Получаем выбранный проект
-        String selectedSpecialist = specialistComboBox.getValue();
         String selectedRole = roleComboBox.getValue();
         String startDate = startDatePicker.getValue().toString();
         String endDate = endDatePicker.getValue().toString();
@@ -178,12 +167,11 @@ public class LeaveRequestController {
         // Далее следует сохранение данных заявки в базу данных
 
         // Запрос SQL для вставки данных заявки в таблицу project_specialists
-        String insertQuery = "INSERT INTO project_specialists (project_id, specialist_id, role_id, start_date, end_date) " +
-                "SELECT projects.id, specialists.id, roles.id, ?, ? " +
-                "FROM projects, specialists, roles " +
-                "WHERE projects.name = ? AND " +
-                "CONCAT(specialists.first_name, ' ', specialists.last_name, ' ', specialists.middle_name) = ? AND " +
-                "roles.name = ?";
+        String insertQuery = "INSERT INTO project_specialists (project_id, role_id, start_date, end_date) " +
+                "SELECT projects.id, roles.id, ?, ? " +
+                "FROM projects, roles " +
+                "WHERE projects.name = ? AND roles.name = ?";
+
 
         String url = "jdbc:mysql://localhost:3306/fors";
         String username = "root";
@@ -194,8 +182,7 @@ public class LeaveRequestController {
             statement.setString(1, startDate);
             statement.setString(2, endDate);
             statement.setString(3, selectedProject);
-            statement.setString(4, selectedSpecialist);
-            statement.setString(5, selectedRole);
+            statement.setString(4, selectedRole);
 
             int rowsAffected = statement.executeUpdate(); // Выполнение запроса на вставку данных
 

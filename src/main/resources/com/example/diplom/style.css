@@ -155,7 +155,13 @@
 }
 
 .list-view .list-cell:filled:hover {
-    -fx-background-color: rgba(33, 150, 243, 0.2);
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+}
+
+.list-view .list-cell:filled:selected {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
 }
 
 /* Текстовые поля и ComboBox */

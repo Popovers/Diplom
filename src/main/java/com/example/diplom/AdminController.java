@@ -128,7 +128,8 @@ public class AdminController {
 
     private ObservableList<ProjectRequest> projectRequests = FXCollections.observableArrayList();
 
-
+    @FXML
+    private ComboBox<String> specialistComboBox;
 
 
 
@@ -571,76 +572,77 @@ public class AdminController {
         }
     }
 
-// Метод загрузки данных проектов
+    // Метод загрузки данных проектов
     private void loadProjectRequests() {
+        // Создаем ObservableList<ProjectRequest> для хранения информации о заявках
+        ObservableList<ProjectRequest> projectRequests = FXCollections.observableArrayList();
+
         // Получение данных о заявках из базы данных и добавление их в список
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
-            String query = "SELECT * FROM project_specialists";
+            String query = "SELECT projects.name AS project_name, roles.name AS role_name, " +
+                    "project_specialists.start_date, project_specialists.end_date, roles.id AS role_id " +
+                    "FROM project_specialists " +
+                    "JOIN projects ON project_specialists.project_id = projects.id " +
+                    "JOIN roles ON project_specialists.role_id = roles.id";
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                int projectId = resultSet.getInt("project_id");
-                int specialistId = resultSet.getInt("specialist_id");
-                int roleId = resultSet.getInt("role_id");
+                String projectName = resultSet.getString("project_name");
+                String roleName = resultSet.getString("role_name");
                 String startDate = resultSet.getString("start_date");
                 String endDate = resultSet.getString("end_date");
+                int roleId = resultSet.getInt("role_id");
 
-                ProjectRequest projectRequest = new ProjectRequest(id, projectId, specialistId, roleId, startDate, endDate);
+                ProjectRequest projectRequest = new ProjectRequest(0, projectName, roleId, roleName, startDate, endDate);
+                projectRequests.add(projectRequest);
                 projectRequests.add(projectRequest);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // Присваиваем заполненный список переменной класса для дальнейшего использования
+        this.projectRequests = projectRequests;
     }
 
-    // Метод распределения специалистов
+    private ObservableList<String> loadSpecialistsByRole(int roleId) {
+        ObservableList<String> specialists = FXCollections.observableArrayList();
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
+            String query = "SELECT CONCAT_WS(' ', s.first_name, s.last_name, s.middle_name) AS full_name " +
+                    "FROM specialists s " +
+                    "JOIN specialist_roles sr ON s.id = sr.specialist_id " +
+                    "WHERE sr.role_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, roleId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String fullName = resultSet.getString("full_name");
+                specialists.add(fullName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ошибка при загрузке специалистов", ButtonType.OK);
+            alert.showAndWait();
+        }
+        return specialists;
+    }
     @FXML
     private void assignSpecialists(ActionEvent event) {
-        // Получение выбранной заявки из списка
         ProjectRequest selectedProjectRequest = projectRequestListView.getSelectionModel().getSelectedItem();
         if (selectedProjectRequest != null) {
-            // Здесь можно реализовать логику назначения специалистов для выбранной заявки
-            // Например, можно открыть новое окно с доступными специалистами для выбора и после выбора специалистов выполнить следующий код:
+            int roleId = selectedProjectRequest.getRoleId(); // Изменено: теперь используем ID роли
+            System.out.println("Выбранная заявка: " + selectedProjectRequest.getProjectName() + ", roleId = " + roleId);
 
-            // Получение информации о выбранных специалистах и их ролях
-
-            // Добавление записей о специалистах в таблицу project_specialists
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
-                String query = "INSERT INTO project_specialists (project_id, specialist_id, role_id, start_date, end_date) VALUES (?, ?, ?, ?, ?)";
-                PreparedStatement statement = connection.prepareStatement(query);
-
-                // Примерные значения для проекта и специалиста
-                int projectId = selectedProjectRequest.getProjectId();
-                int specialistId = 1; // Пример ID специалиста
-                int roleId = 1; // Пример ID роли
-                Date startDate = Date.valueOf("2024-04-01"); // Пример даты начала
-                Date endDate = Date.valueOf("2024-12-31"); // Пример даты окончания
-
-                statement.setInt(1, projectId);
-                statement.setInt(2, specialistId);
-                statement.setInt(3, roleId);
-                statement.setDate(4, startDate);
-                statement.setDate(5, endDate);
-
-                int rowsInserted = statement.executeUpdate();
-                if (rowsInserted > 0) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Специалист успешно назначен на проект", ButtonType.OK);
-                    alert.showAndWait();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Ошибка при назначении специалиста на проект", ButtonType.OK);
-                alert.showAndWait();
-            }
+            ObservableList<String> specialists = loadSpecialistsByRole(roleId);
+            specialistComboBox.setItems(specialists);
         } else {
-            // Пользователь не выбрал заявку
+            System.out.println("Заявка не выбрана");
             Alert alert = new Alert(Alert.AlertType.WARNING, "Пожалуйста, выберите заявку", ButtonType.OK);
             alert.showAndWait();
         }
     }
-
     // Метод закрытия окна авторизации
     @FXML
     private void onCancelButtonClick() {
