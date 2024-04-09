@@ -7,21 +7,7 @@ public class ProjectRequest {
     private String startDate;
     private String endDate;
     private int roleId;
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
     private String roleName;
-
 
     public ProjectRequest(int id, String projectName, int roleId, String roleName, String startDate, String endDate) {
         this.id = id;
@@ -30,6 +16,8 @@ public class ProjectRequest {
         this.roleName = roleName;
         this.startDate = startDate;
         this.endDate = endDate;
+        // Устанавливаем значение роли
+        this.role = roleName;
     }
 
     public int getId() {
@@ -83,6 +71,18 @@ public class ProjectRequest {
 
     public int getRoleId() {
         return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     @Override

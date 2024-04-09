@@ -17,6 +17,7 @@ import java.sql.*;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class AdminController {
@@ -579,23 +580,24 @@ public class AdminController {
 
         // Получение данных о заявках из базы данных и добавление их в список
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
-            String query = "SELECT projects.name AS project_name, roles.name AS role_name, " +
+            String query = "SELECT projects.id AS project_id, projects.name AS project_name, roles.name AS role_name, " +
                     "project_specialists.start_date, project_specialists.end_date, roles.id AS role_id " +
-                    "FROM project_specialists " +
-                    "JOIN projects ON project_specialists.project_id = projects.id " +
-                    "JOIN roles ON project_specialists.role_id = roles.id";
+                    "FROM projects " +
+                    "JOIN project_specialists ON projects.id = project_specialists.project_id " +
+                    "JOIN roles ON project_specialists.role_id = roles.id " +
+                    "WHERE project_specialists.specialist_id IS NULL";
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
+                int projectId = resultSet.getInt("project_id");
                 String projectName = resultSet.getString("project_name");
                 String roleName = resultSet.getString("role_name");
                 String startDate = resultSet.getString("start_date");
                 String endDate = resultSet.getString("end_date");
                 int roleId = resultSet.getInt("role_id");
 
-                ProjectRequest projectRequest = new ProjectRequest(0, projectName, roleId, roleName, startDate, endDate);
-                projectRequests.add(projectRequest);
+                ProjectRequest projectRequest = new ProjectRequest(projectId, projectName, roleId, roleName, startDate, endDate);
                 projectRequests.add(projectRequest);
             }
         } catch (SQLException e) {
@@ -626,22 +628,75 @@ public class AdminController {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Ошибка при загрузке специалистов", ButtonType.OK);
             alert.showAndWait();
         }
-        return specialists;
+        return specialists; // Возвращаем список специалистов
     }
     @FXML
     private void assignSpecialists(ActionEvent event) {
         ProjectRequest selectedProjectRequest = projectRequestListView.getSelectionModel().getSelectedItem();
-        if (selectedProjectRequest != null) {
-            int roleId = selectedProjectRequest.getRoleId(); // Изменено: теперь используем ID роли
-            System.out.println("Выбранная заявка: " + selectedProjectRequest.getProjectName() + ", roleId = " + roleId);
-
-            ObservableList<String> specialists = loadSpecialistsByRole(roleId);
-            specialistComboBox.setItems(specialists);
-        } else {
+        if (selectedProjectRequest == null) {
             System.out.println("Заявка не выбрана");
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Пожалуйста, выберите заявку", ButtonType.OK);
-            alert.showAndWait();
+            return; // Возвращаемся, не выполняя дальнейшие действия
         }
+
+        int roleId = selectedProjectRequest.getRoleId();
+        System.out.println("Выбранная заявка: " + selectedProjectRequest.getProjectName() + ", roleId = " + roleId);
+
+        // Получение выбранного специалиста из комбобокса
+        String selectedSpecialist = specialistComboBox.getSelectionModel().getSelectedItem();
+        if (selectedSpecialist == null) {
+            System.out.println("Специалист не выбран");
+            return; // Возвращаемся, не выполняя дальнейшие действия
+        }
+
+        // Добавление специалиста в базу данных для выбранного проекта
+        addSpecialistToProject(selectedSpecialist, selectedProjectRequest.getId());
+    }
+
+    private void addSpecialistToProject(String specialistName, int projectId) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
+            // Получаем id специалиста по его имени
+            String specialistIdQuery = "SELECT id FROM specialists WHERE CONCAT_WS(' ', first_name, last_name, middle_name) = ?";
+            PreparedStatement specialistIdStatement = connection.prepareStatement(specialistIdQuery);
+            specialistIdStatement.setString(1, specialistName);
+            ResultSet specialistIdResult = specialistIdStatement.executeQuery();
+            if (specialistIdResult.next()) {
+                int specialistId = specialistIdResult.getInt("id");
+
+                // Обновляем запись в таблице project_specialists, добавляя specialistId
+                String updateQuery = "UPDATE project_specialists SET specialist_id = ? WHERE project_id = ?";
+                PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                updateStatement.setInt(1, specialistId);
+                updateStatement.setInt(2, projectId);
+                int rowsAffected = updateStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Специалист успешно добавлен к проекту");
+                } else {
+                    System.out.println("Не удалось добавить специалиста к проекту");
+                }
+            } else {
+                System.out.println("Специалист с таким именем не найден");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int getSelectedSpecialistId(String selectedSpecialist) {
+        int specialistId = -1;
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
+            String query = "SELECT id FROM specialists WHERE CONCAT_WS(' ', first_name, last_name, middle_name) = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, selectedSpecialist);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                specialistId = resultSet.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return specialistId;
     }
     // Метод закрытия окна авторизации
     @FXML
@@ -667,6 +722,16 @@ public class AdminController {
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+        projectRequestListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                int roleId = newValue.getRoleId(); // Получение ID роли выбранной заявки
+                System.out.println("Выбранная заявка: " + newValue.getProjectName() + ", roleId = " + roleId);
+
+                // Загрузка специалистов для выбранной роли
+                ObservableList<String> specialists = loadSpecialistsByRole(roleId);
+                specialistComboBox.setItems(specialists);
+            }
+        });
 
         loadRolesInComboBox();
         loadUserData();
