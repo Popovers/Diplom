@@ -33,6 +33,7 @@
     -fx-background-radius: 0;
     -fx-border-width: 0;
     -fx-padding: 10px 20px;
+    -fx-transition: all 0.3s ease; /* Добавляем плавные переходы для вкладок */
 }
 
 .tab-pane .tab:selected {
@@ -43,6 +44,7 @@
 .tab-pane .tab:hover {
     -fx-background-color: rgba(33, 150, 243, 0.2);
 }
+
 /* Кнопки */
 .button {
     -fx-background-color: -fx-primary-color;
@@ -51,6 +53,8 @@
     -fx-padding: 6px 12px;
     -fx-font-size: 12px;
     -fx-cursor: hand;
+    -fx-transition: all 0.3s ease; /* Добавляем плавные переходы для кнопок */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 0); /* Добавляем эффект тени */
 }
 
 .button:hover {
@@ -59,11 +63,13 @@
 
 /* Текстовые поля */
 .text-field, .text-area, .password-field {
-    -fx-background-color: transparent;
-    -fx-border-color: -fx-primary-color;
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #ccc;
     -fx-border-radius: 3px;
-    -fx-padding: 3px 6px;
-    -fx-font-size: 12px;
+    -fx-padding: 5px;
+    -fx-font-size: 13px;
+    -fx-pref-width: 220px; /* Увеличиваем ширину для лучшей читаемости */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 0); /* Добавляем эффект тени */
 }
 
 .text-field:focused, .text-area:focused, .password-field:focused {
@@ -72,12 +78,13 @@
 
 /* ComboBox */
 .combo-box {
-    -fx-background-color: transparent;
-    -fx-border-color: -fx-primary-color;
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #ccc;
     -fx-border-radius: 3px;
-    -fx-padding: 3px 6px;
-    -fx-font-size: 12px;
-    -fx-pref-width: 200px; /* Ширина комбобокса */
+    -fx-padding: 5px;
+    -fx-font-size: 13px;
+    -fx-pref-width: 220px; /* Увеличиваем ширину для лучшей читаемости */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 0); /* Добавляем эффект тени */
 }
 
 .combo-box:focused {
@@ -86,22 +93,25 @@
 
 /* Popup */
 .combo-box .combo-box-popup .list-view {
-    -fx-background-color: white; /* Белый фон выпадающего списка */
+    -fx-background-color: #f5f5f5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);
+    -fx-padding: 5px;
 }
 
 /* TableView */
-
 .table-view {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
     -fx-border-spacing: 10;
 }
 
-
 .table-view .column-header {
-    -fx-background-color: -fx-accent-color;
+    -fx-background-color: #2196F3;
     -fx-text-fill: white;
-    -fx-padding: 0; /* Убираем внутренние отступы */
+    -fx-padding: 5px;
+    -fx-font-weight: bold;
 }
 
 .table-view .column-header:first-child {
@@ -112,11 +122,8 @@
     -fx-background-radius: 0 7px 7px 0;
 }
 
-
-
 .table-view .column-header-background .label {
     -fx-text-fill: white;
-
 }
 
 .table-view .table-cell {
@@ -137,26 +144,28 @@
     -fx-background-color: -fx-primary-color;
     -fx-text-fill: white;
 }
+
 .header-color .column-header-background {
-  -fx-background-color: #00FF00; /* Зеленый цвет */
+    -fx-background-color: #00FF00; /* Зеленый цвет */
 }
 
 /* ListView */
 .list-view {
-    -fx-background-color: transparent;
-    -fx-border-color: -fx-primary-color;
-    -fx-border-radius: 3px;
-    -fx-padding: 3px;
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
 }
 
 .list-view .list-cell {
-    -fx-padding: 3px 6px;
+    -fx-padding: 5px 10px;
     -fx-background-color: transparent;
+    -fx-font-size: 13px;
 }
 
 .list-view .list-cell:filled:hover {
-    -fx-background-color: -fx-primary-color;
-    -fx-text-fill: white;
+    -fx-background-color: rgba(33, 150, 243, 0.2);
+    -fx-text-fill: -fx-primary-color;
 }
 
 .list-view .list-cell:filled:selected {
@@ -172,4 +181,23 @@
     -fx-padding: 3px 6px;
     -fx-font-size: 12px;
     -fx-pref-width: 200px; /* Одинаковая ширина для текстовых полей и комбобокса */
+}
+
+/* DatePicker */
+.date-picker {
+    -fx-background-color: transparent;
+
+    -fx-border-radius: 3px;
+    -fx-padding: 3px 6px;
+    -fx-font-size: 12px;
+    -fx-pref-width: 200px;
+}
+
+/* Добавляем иконки для некоторых кнопок */
+#createUserButton {
+    -fx-graphic: url("user-add.png");
+}
+
+#deleteUserButton {
+    -fx-graphic: url("user-delete.png");
 }

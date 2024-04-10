@@ -18,8 +18,7 @@ public class LeaveRequestController {
     @FXML
     private ComboBox<String> roleComboBox;
 
-    @FXML
-    private Label specializationLabel;
+
 
     @FXML
     private DatePicker startDatePicker;
@@ -33,10 +32,7 @@ public class LeaveRequestController {
     @FXML
     private Button cancelButton; // Добавили ссылку на кнопку "Назад"
 
-    private ObservableList<String> projectList = FXCollections.observableArrayList();
 
-    private ObservableList<String> roleList = FXCollections.observableArrayList();
-    private ObservableList<String> specializationList = FXCollections.observableArrayList();
 
 //    private Stage stage;
 

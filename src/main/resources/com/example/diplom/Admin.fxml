@@ -15,6 +15,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.DatePicker?>
 <?stylesheets @style.css?>
 
 <TabPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.diplom.AdminController">
@@ -71,8 +72,8 @@
                 <HBox alignment="CENTER" spacing="10.0">
                     <TextField fx:id="projectNameField" promptText="Название проекта" />
                     <TextArea fx:id="projectDescriptionArea" prefRowCount="3" promptText="Описание проекта" />
-                    <TextField fx:id="projectStartDateField" promptText="Дата начала" />
-                    <TextField fx:id="projectEndDateField" promptText="Дата окончания" />
+                    <DatePicker fx:id="projectStartDatePicker" promptText="Дата начала" />
+                    <DatePicker fx:id="projectEndDatePicker" promptText="Дата окончания" />
                     <TextField fx:id="projectBudgetField" promptText="Бюджет" />
                     <Button onAction="#onCreateProjectButtonClick" text="Создать" />
                 </HBox>
@@ -91,8 +92,8 @@
                 <HBox alignment="CENTER" spacing="10.0">
                     <TextField fx:id="editProjectNameField" promptText="Новое название" />
                     <TextArea fx:id="editProjectDescriptionArea" prefRowCount="3" promptText="Новое описание" />
-                    <TextField fx:id="editProjectStartDateField" promptText="Новая дата начала" />
-                    <TextField fx:id="editProjectEndDateField" promptText="Новая дата окончания" />
+                    <DatePicker fx:id="editProjectStartDatePicker" promptText="Новая дата начала" />
+                    <DatePicker fx:id="editProjectEndDatePicker" promptText="Новая дата окончания" />
                     <TextField fx:id="editProjectBudgetField" promptText="Новый бюджет" />
                     <Button onAction="#updateProject" text="Сохранить" />
                     <Button onAction="#onDeleteProjectButtonClick" text="Удалить" />
