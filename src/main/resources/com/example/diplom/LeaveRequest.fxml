@@ -17,8 +17,6 @@
     <HBox spacing="10.0">
         <Label text="Выберите проект:"/>
         <ComboBox fx:id="projectComboBox" prefWidth="200" />
-        <Label text="Выберите специалиста:"/>
-        <ComboBox fx:id="specialistComboBox" onAction="#onSpecialistSelected"/>
     </HBox>
 
     <Label fx:id="specializationLabel"/>

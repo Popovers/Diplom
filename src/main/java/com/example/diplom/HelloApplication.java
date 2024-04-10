@@ -22,7 +22,7 @@ public class HelloApplication extends Application {
     }
 
     public static void showLoginView() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("admin.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("Login");
         primaryStage.setScene(scene);

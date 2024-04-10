@@ -14,8 +14,6 @@ import java.sql.*;
 
 public class LeaveRequestController {
 
-    @FXML
-    private ComboBox<String> specialistComboBox;
 
     @FXML
     private ComboBox<String> roleComboBox;
@@ -37,7 +35,6 @@ public class LeaveRequestController {
 
     private ObservableList<String> projectList = FXCollections.observableArrayList();
 
-    private ObservableList<String> specialistList = FXCollections.observableArrayList();
     private ObservableList<String> roleList = FXCollections.observableArrayList();
     private ObservableList<String> specializationList = FXCollections.observableArrayList();
 
@@ -54,30 +51,9 @@ public class LeaveRequestController {
 
     @FXML
     private void initialize() {
-        loadSpecialists();
+
         loadRoles();
         loadProjects();
-    }
-    private void loadSpecialists() {
-        // Загрузка списка специалистов из базы данных
-        String url = "jdbc:mysql://localhost:3306/fors";
-        String username = "root";
-        String password = "r10270707";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM specialists")) {
-            while (resultSet.next()) {
-                String fullName = resultSet.getString("first_name") + " " +
-                        resultSet.getString("last_name") + " " +
-                        resultSet.getString("middle_name");
-                specialistList.add(fullName);
-            }
-        } catch (SQLException e) {
-            System.err.println("Ошибка при загрузке специалистов: " + e.getMessage());
-        }
-
-        specialistComboBox.setItems(specialistList);
     }
 
     private void loadRoles() {
@@ -101,32 +77,6 @@ public class LeaveRequestController {
         roleComboBox.hide();
     }
 
-    @FXML
-    private void onSpecialistSelected() {
-        String selectedSpecialist = specialistComboBox.getValue();
-        String url = "jdbc:mysql://localhost:3306/fors";
-        String username = "root";
-        String password = "r10270707";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement statement = connection.prepareStatement("SELECT sr.role_id, sp.name " +
-                     "FROM specialist_roles sr " +
-                     "JOIN roles r ON sr.role_id = r.id " +
-                     "JOIN specializations sp ON sr.specialist_id = sp.id " +
-                     "JOIN specialists s ON sr.specialist_id = s.id " +
-                     "WHERE CONCAT(s.first_name, ' ', s.last_name, ' ', s.middle_name) = ?")) {
-            statement.setString(1, selectedSpecialist);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    String roleName = resultSet.getString("r.name");
-                    String specializationName = resultSet.getString("sp.name");
-                    specializationLabel.setText("Роль: " + roleName + ", Специализация: " + specializationName);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Ошибка при загрузке информации о специалисте: " + e.getMessage());
-        }
-    }
 
     private void loadProjects() {
         // Загрузка списка проектов из базы данных

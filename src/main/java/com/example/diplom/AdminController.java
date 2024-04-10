@@ -650,7 +650,9 @@ public class AdminController {
 
         // Добавление специалиста в базу данных для выбранного проекта
         addSpecialistToProject(selectedSpecialist, selectedProjectRequest.getId());
+        loadProjectRequests();
     }
+
 
     private void addSpecialistToProject(String specialistName, int projectId) {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
@@ -681,23 +683,23 @@ public class AdminController {
         }
     }
 
-    private int getSelectedSpecialistId(String selectedSpecialist) {
-        int specialistId = -1;
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
-            String query = "SELECT id FROM specialists WHERE CONCAT_WS(' ', first_name, last_name, middle_name) = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, selectedSpecialist);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                specialistId = resultSet.getInt("id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return specialistId;
-    }
+//    private int getSelectedSpecialistId(String selectedSpecialist) {
+//        int specialistId = -1;
+//        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
+//            String query = "SELECT id FROM specialists WHERE CONCAT_WS(' ', first_name, last_name, middle_name) = ?";
+//            PreparedStatement statement = connection.prepareStatement(query);
+//            statement.setString(1, selectedSpecialist);
+//            ResultSet resultSet = statement.executeQuery();
+//
+//            if (resultSet.next()) {
+//                specialistId = resultSet.getInt("id");
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return specialistId;
+//    }
     // Метод закрытия окна авторизации
     @FXML
     private void onCancelButtonClick() {
