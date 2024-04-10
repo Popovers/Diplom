@@ -609,26 +609,24 @@ private void updateProject() {
         return specialists; // Возвращаем список специалистов
     }
     @FXML
-    private void assignSpecialists(ActionEvent event) {
-        ProjectRequest selectedProjectRequest = projectRequestListView.getSelectionModel().getSelectedItem();
-        if (selectedProjectRequest == null) {
-            System.out.println("Заявка не выбрана");
-            return; // Возвращаемся, не выполняя дальнейшие действия
+    private void assignSpecialists() {
+        // Получение выбранного специалиста
+        String specialistName = specialistComboBox.getValue();
+
+        // Если специалист выбран и есть выбранный проект
+        if (specialistName != null && projectRequestListView.getSelectionModel().getSelectedItem() != null) {
+            // Получение ID выбранного проекта
+            int projectId = projectRequestListView.getSelectionModel().getSelectedItem().getId();
+
+            // Добавление специалиста к проекту
+            addSpecialistToProject(specialistName, projectId);
+
+            // Обновление списка проектов
+            loadProjectRequests();
+
+            // Снятие выбора с выбранного элемента ListView
+            projectRequestListView.getSelectionModel().clearSelection();
         }
-
-        int roleId = selectedProjectRequest.getRoleId();
-        System.out.println("Выбранная заявка: " + selectedProjectRequest.getProjectName() + ", roleId = " + roleId);
-
-        // Получение выбранного специалиста из комбобокса
-        String selectedSpecialist = specialistComboBox.getSelectionModel().getSelectedItem();
-        if (selectedSpecialist == null) {
-            System.out.println("Специалист не выбран");
-            return; // Возвращаемся, не выполняя дальнейшие действия
-        }
-
-        // Добавление специалиста в базу данных для выбранного проекта
-        addSpecialistToProject(selectedSpecialist, selectedProjectRequest.getId());
-        loadProjectRequests();
     }
 
 
@@ -650,6 +648,12 @@ private void updateProject() {
                 int rowsAffected = updateStatement.executeUpdate();
                 if (rowsAffected > 0) {
                     System.out.println("Специалист успешно добавлен к проекту");
+                    // После успешного добавления специалиста, обновляем список заявок проекта
+                    // Снятие выбора с выбранного элемента ListView
+                    projectRequestListView.getSelectionModel().clearSelection();
+                    loadProjectRequests();
+                    projectRequestListView.setItems(projectRequests);
+                    specialistComboBox.setValue(null);
                 } else {
                     System.out.println("Не удалось добавить специалиста к проекту");
                 }
@@ -661,23 +665,7 @@ private void updateProject() {
         }
     }
 
-//    private int getSelectedSpecialistId(String selectedSpecialist) {
-//        int specialistId = -1;
-//        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
-//            String query = "SELECT id FROM specialists WHERE CONCAT_WS(' ', first_name, last_name, middle_name) = ?";
-//            PreparedStatement statement = connection.prepareStatement(query);
-//            statement.setString(1, selectedSpecialist);
-//            ResultSet resultSet = statement.executeQuery();
-//
-//            if (resultSet.next()) {
-//                specialistId = resultSet.getInt("id");
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return specialistId;
-//    }
+
     // Метод закрытия окна авторизации
     @FXML
     private void onCancelButtonClick() {
