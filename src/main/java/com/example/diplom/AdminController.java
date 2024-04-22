@@ -1,6 +1,6 @@
 package com.example.diplom;
 
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +16,13 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.FileWriter;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+import java.sql.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 
 public class AdminController {
@@ -108,22 +114,19 @@ public class AdminController {
     private TableColumn<Project, LocalDate> projectEndDateColumn;
     @FXML
     private TableColumn<Project, Integer> projectBudgetColumn;
-
-
-
     @FXML
     private ListView<ProjectRequest> projectRequestListView;
-
     private ObservableList<ProjectRequest> projectRequests = FXCollections.observableArrayList();
-
     @FXML
     private ComboBox<String> specialistComboBox;
-
     @FXML
     private DatePicker projectStartDatePicker;
-
     @FXML
     private DatePicker projectEndDatePicker;
+    @FXML
+    private Button generateReportButton;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
 
 //Метод загрузки данных из БД в комбобокс
@@ -457,8 +460,8 @@ private void onCreateProjectButtonClick() {
     }
 
 //Метод обновления записей проекта
-@FXML
-private void updateProject() {
+    @FXML
+    private void updateProject() {
     Project selectedProject = projectTableView.getSelectionModel().getSelectedItem();
     if (selectedProject != null) {
         // Получение новых данных из соответствующих полей
@@ -677,6 +680,61 @@ private void updateProject() {
 
     }
 
+
+    @FXML
+    private void generateReport() {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707");
+
+            // Запрос для получения данных для отчета
+            String query = "SELECT p.name AS project_name, r.name AS role_name, " +
+                    "ps.start_date, ps.end_date, s.first_name, s.last_name, s.middle_name " +
+                    "FROM project_specialists ps " +
+                    "JOIN projects p ON ps.project_id = p.id " +
+                    "JOIN roles r ON ps.role_id = r.id " +
+                    "JOIN specialists s ON ps.specialist_id = s.id";
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Создание файла отчета
+            FileWriter fileWriter = new FileWriter("report.txt");
+            fileWriter.write("Отчет\n\n");
+
+            while (resultSet.next()) {
+                String projectName = resultSet.getString("project_name");
+                String roleName = resultSet.getString("role_name");
+                String startDate = resultSet.getString("start_date");
+                String endDate = resultSet.getString("end_date");
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+                String middleName = resultSet.getString("middle_name");
+                String fullName = firstName + " " + lastName + " " + middleName;
+
+                fileWriter.write("Проект: " + projectName + "\n");
+                fileWriter.write("Роль: " + roleName + "\n");
+                fileWriter.write("Специалист: " + fullName + "\n");
+                fileWriter.write("Период: " + startDate + " - " + endDate + "\n\n");
+            }
+
+            fileWriter.close();
+            connection.close();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Отчет");
+            alert.setHeaderText(null);
+            alert.setContentText("Отчет успешно создан (report.txt)");
+            alert.showAndWait();
+
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText(null);
+            alert.setContentText("Ошибка при создании отчета: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
     //Инициализация класса
     public void initialize() {
         // Привязываем свойство disable кнопки createUserButton к состоянию пустоты полей

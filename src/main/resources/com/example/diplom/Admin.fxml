@@ -127,7 +127,7 @@
                 </padding>
 
                 <Label style="-fx-font-weight: bold;" text="Управление данными" />
-                <Button text="Сгенерировать отчет" />
+                <Button fx:id="generateReportButton" onAction="#generateReport" text="Сгенерировать отчет" />
             </VBox>
         </ScrollPane>
     </Tab>

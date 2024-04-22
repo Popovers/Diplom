@@ -6,6 +6,9 @@ module com.example.diplom {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires spring.context;
+    requires spring.jdbc;
+    requires spring.beans;
 
     opens com.example.diplom to javafx.fxml;
     exports com.example.diplom;
