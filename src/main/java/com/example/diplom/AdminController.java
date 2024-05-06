@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.sql.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.springframework.jdbc.core.JdbcTemplate;
+//import org.springframework.jdbc.core.JdbcTemplate;
 
 
 public class AdminController {
@@ -125,8 +125,8 @@ public class AdminController {
     private DatePicker projectEndDatePicker;
     @FXML
     private Button generateReportButton;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+//    @Autowired
+//    private JdbcTemplate jdbcTemplate;
 
 
 //Метод загрузки данных из БД в комбобокс
@@ -145,8 +145,6 @@ public class AdminController {
         String email = newEmailField.getText();
         String password = newPasswordField1.getText();
         String role = newUserRoleComboBox.getValue();
-
-        // Попытка подключения к базе данных
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
             // Подготовка запроса на вставку нового пользователя
             String query = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
@@ -743,11 +741,29 @@ private void onCreateProjectButtonClick() {
                         .or(newEmailField.textProperty().isEmpty())
                         .or(newPasswordField1.textProperty().isEmpty())
         );
+
         // Устанавливаем соответствие между полями класса User и столбцами TableView
         userIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+
+        // Слушатель для загрузки данных пользователя в форму редактирования при выборе в таблице
+        userTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                editUsernameField.setText(newSelection.getUsername());
+                editEmailField.setText(newSelection.getEmail());
+                // Пропускаем пароль для безопасности, его можно редактировать через отдельный процесс
+                // editPasswordField1.setText(newSelection.getPassword());
+            } else {
+                // Очистка полей при отсутствии выбранного пользователя
+                editUsernameField.clear();
+                editEmailField.clear();
+                editPasswordField1.clear();
+            }
+        });
+
+        // Слушатель выбора проектных заявок
         projectRequestListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 int roleId = newValue.getRoleId(); // Получение ID роли выбранной заявки
