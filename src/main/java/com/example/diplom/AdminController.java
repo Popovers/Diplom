@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.control.DatePicker;
 import java.time.LocalDate;
@@ -17,12 +18,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.FileWriter;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.io.IOException;
-import java.sql.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-//import org.springframework.jdbc.core.JdbcTemplate;
+import javafx.scene.input.MouseEvent;
+
 
 
 public class AdminController {
@@ -56,21 +55,6 @@ public class AdminController {
 
     @FXML
     private TextField projectBudgetField;
-
-    @FXML
-    private TextField editProjectNameField;
-
-    @FXML
-    private TextArea editProjectDescriptionArea;
-
-    @FXML
-    private DatePicker editProjectStartDatePicker;
-
-    @FXML
-    private DatePicker editProjectEndDatePicker;
-
-    @FXML
-    private TextField editProjectBudgetField;
 
     @FXML
     private Button createUserButton;
@@ -171,10 +155,7 @@ public class AdminController {
                 loadUserData();
 
                 // Очистка полей после добавления пользователя
-                newUsernameField.clear();
-                newEmailField.clear();
-                newPasswordField1.clear();
-                newUserRoleComboBox.setValue(null);
+                clearFieldsUser();
             }
         } catch (SQLException e) {
             // Обработка ошибок подключения или выполнения запроса
@@ -228,9 +209,7 @@ public class AdminController {
                 loadUserData();
 
                 // Очистка полей после сохранения изменений
-                editUsernameField.clear();
-                editEmailField.clear();
-                editPasswordField1.clear();
+               clearFieldsUserEdit();
             } catch (SQLException e) {
                 // Обработка ошибок подключения или выполнения запроса
                 e.printStackTrace();
@@ -458,52 +437,69 @@ private void onCreateProjectButtonClick() {
     }
 
 //Метод обновления записей проекта
-    @FXML
-    private void updateProject() {
+@FXML
+private void updateProject() {
+    // Получение выбранного проекта из таблицы
     Project selectedProject = projectTableView.getSelectionModel().getSelectedItem();
+
+    // Проверка, что проект выбран
     if (selectedProject != null) {
-        // Получение новых данных из соответствующих полей
-        String newName = editProjectNameField.getText();
-        String newDescription = editProjectDescriptionArea.getText();
-        LocalDate newStartDate = editProjectStartDatePicker.getValue();
-        LocalDate newEndDate = editProjectEndDatePicker.getValue();
-        int newBudget = Integer.parseInt(editProjectBudgetField.getText());
+        // Получение данных из соответствующих полей
+        String newName = projectNameField.getText();
+        String newDescription = projectDescriptionArea.getText();
+        LocalDate newStartDate = projectStartDatePicker.getValue();
+        LocalDate newEndDate = projectEndDatePicker.getValue();
+        String newBudgetText = projectBudgetField.getText();
 
-        // Обновление данных проекта
-        selectedProject.setName(newName);
-        selectedProject.setDescription(newDescription);
-        selectedProject.setStartDate(newStartDate);
-        selectedProject.setEndDate(newEndDate);
-        selectedProject.setBudget(newBudget);
+        // Проверка корректности введенных данных
+        if (newName.isEmpty() || newStartDate == null || newEndDate == null || newBudgetText.isEmpty()) {
+            showErrorDialog("Заполните все поля.");
+            return;
+        }
 
-        // Обновление данных в базе данных
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
-            String query = "UPDATE projects SET name = ?, description = ?, start_date = ?, end_date = ?, budget = ? WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, newName);
-            statement.setString(2, newDescription);
-            statement.setDate(3, Date.valueOf(newStartDate));
-            statement.setDate(4, Date.valueOf(newEndDate));
-            statement.setInt(5, newBudget);
-            statement.setInt(6, selectedProject.getId());
-            int rowsUpdated = statement.executeUpdate();
+        try {
+            // Преобразование текстовых данных в нужные типы
+            int newBudget = Integer.parseInt(newBudgetText);
 
-            if (rowsUpdated > 0) {
-                // Успешное обновление данных проекта
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("Данные проекта успешно обновлены.");
-                alert.showAndWait();
-                loadProjectData(); // Обновление таблицы проектов
+            // Обновление данных проекта
+            selectedProject.setName(newName);
+            selectedProject.setDescription(newDescription);
+            selectedProject.setStartDate(newStartDate);
+            selectedProject.setEndDate(newEndDate);
+            selectedProject.setBudget(newBudget);
+
+            // Обновление данных в базе данных
+            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/fors", "root", "r10270707")) {
+                String query = "UPDATE projects SET name = ?, description = ?, start_date = ?, end_date = ?, budget = ? WHERE id = ?";
+                PreparedStatement statement = connection.prepareStatement(query);
+                statement.setString(1, newName);
+                statement.setString(2, newDescription);
+                statement.setDate(3, Date.valueOf(newStartDate));
+                statement.setDate(4, Date.valueOf(newEndDate));
+                statement.setInt(5, newBudget);
+                statement.setInt(6, selectedProject.getId());
+                int rowsUpdated = statement.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                    // Успешное обновление данных проекта
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Данные проекта успешно обновлены.");
+                    alert.showAndWait();
+                    loadProjectData();
+                    clearFields();// Обновление таблицы проектов
+                }
+            } catch (SQLException e) {
+                showErrorDialog("Ошибка при обновлении данных проекта: " + e.getMessage());
             }
-        } catch (SQLException e) {
-            showErrorDialog("Ошибка при обновлении данных проекта: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            // Обработка ошибок ввода данных
+            showErrorDialog("Некорректный формат бюджета.");
         }
     } else {
         showWarningDialog("Пожалуйста, выберите проект для обновления.");
     }
-    loadProjectData();
 }
 
 
@@ -733,6 +729,40 @@ private void onCreateProjectButtonClick() {
             alert.showAndWait();
         }
     }
+
+    private void clearFields() {
+        projectNameField.clear();
+        projectDescriptionArea.clear();
+        projectStartDatePicker.setValue(null);
+        projectEndDatePicker.setValue(null);
+        projectBudgetField.clear();
+    }
+    private void clearFieldsUser() {
+        newUsernameField.clear();
+        newEmailField.clear();
+        newPasswordField1.clear();
+        newUserRoleComboBox.setValue(null);
+    }
+    private void clearFieldsUserEdit() {
+        editUsernameField.clear();
+        editEmailField.clear();
+        editPasswordField1.clear();
+    }
+
+    @FXML
+    private void handleEmptyClick(MouseEvent event) {
+        // Если кликнуто в пустом месте, очищаем поля для изменения
+        if (event.getTarget() instanceof Pane) {
+            clearFields();
+        }
+    }
+    @FXML
+    private void handleEmptyClickUser(MouseEvent event) {
+        // Если кликнуто в пустом месте, очищаем поля для изменения
+        if (event.getTarget() instanceof Pane) {
+            clearFieldsUserEdit();
+        }
+    }
     //Инициализация класса
     public void initialize() {
         // Привязываем свойство disable кнопки createUserButton к состоянию пустоты полей
@@ -762,6 +792,22 @@ private void onCreateProjectButtonClick() {
                 editPasswordField1.clear();
             }
         });
+
+    // Добавляем слушатель для выбора проекта в таблице
+        projectTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Если выбран проект, загружаем его данные в поля для изменения
+                projectNameField.setText(newValue.getName());
+                projectDescriptionArea.setText(newValue.getDescription());
+                projectStartDatePicker.setValue(newValue.getStartDate());
+                projectEndDatePicker.setValue(newValue.getEndDate());
+                projectBudgetField.setText(String.valueOf(newValue.getBudget()));
+            } else {
+                // Если нет выбранного проекта, очищаем поля для изменения
+                clearFields();
+            }
+        });
+
 
         // Слушатель выбора проектных заявок
         projectRequestListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

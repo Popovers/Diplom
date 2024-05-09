@@ -19,7 +19,11 @@ public class LoginController {
 
     @FXML
     private PasswordField passwordField;
+    private Stage stage;
 
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
     public void onLoginButtonClick() {
         String username = usernameField.getText();
