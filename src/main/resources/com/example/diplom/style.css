@@ -4,23 +4,20 @@
     -fx-accent-color: #FF5722;
 }
 
-/* Общий стиль */
 .root {
     -fx-background-color: #FAFAFA;
     -fx-font-family: 'Roboto', sans-serif;
     -fx-spacing: 10;
-    -fx-padding: 15;
+    -fx-padding: 20;
 }
 
 /* TabPane */
 .tab-pane {
-    -fx-tab-min-width: 120; /* Ширина вкладок */
-}
-
-.tab-pane .tab-header-area {
-    -fx-side: left; /* Расположение вкладок слева */
-    -fx-background-insets: 0, 1;
-    -fx-padding: 0 0 0 10;
+    -fx-tab-min-width: 120;
+    -fx-side: top; /* Tabs on top */
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-background-color: #FFFF;
 }
 
 .tab-pane .tab-header-area .tab-header-background {
@@ -33,7 +30,9 @@
     -fx-background-radius: 0;
     -fx-border-width: 0;
     -fx-padding: 10px 20px;
-    -fx-transition: all 0.3s ease; /* Добавляем плавные переходы для вкладок */
+    -fx-transition: all 0.3s ease;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }
 
 .tab-pane .tab:selected {
@@ -45,122 +44,124 @@
     -fx-background-color: rgba(33, 150, 243, 0.2);
 }
 
-/* Кнопки */
+/* Buttons */
 .button {
     -fx-background-color: -fx-primary-color;
     -fx-text-fill: white;
-    -fx-background-radius: 15px;
-    -fx-padding: 6px 12px;
-    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25px;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 14px;
     -fx-cursor: hand;
-    -fx-transition: all 0.3s ease; /* Добавляем плавные переходы для кнопок */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 0); /* Добавляем эффект тени */
+    -fx-transition: all 0.3s ease;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 3);
 }
 
 .button:hover {
     -fx-background-color: derive(-fx-primary-color, -20%);
 }
 
-/* Текстовые поля */
+/* Text Fields */
 .text-field, .text-area, .password-field {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 3px;
-    -fx-padding: 5px;
-    -fx-font-size: 13px;
-    -fx-pref-width: 220px; /* Увеличиваем ширину для лучшей читаемости */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 0); /* Добавляем эффект тени */
+    -fx-background-color: white;
+    -fx-border-color: #D3D3D3; /* Light grey border */
+    -fx-border-radius: 5px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 200px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 2, 0, 0, 0);
 }
 
 .text-field:focused, .text-area:focused, .password-field:focused {
-    -fx-border-color: -fx-accent-color;
+    -fx-border-color: -fx-primary-color; /* Blue border on focus */
 }
 
 /* ComboBox */
 .combo-box {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 3px;
-    -fx-padding: 5px;
-    -fx-font-size: 13px;
-    -fx-pref-width: 220px; /* Увеличиваем ширину для лучшей читаемости */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 0); /* Добавляем эффект тени */
+    -fx-background-color: white;
+    -fx-border-color: #D3D3D3;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px 1px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 200px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 2, 0, 0, 0);
 }
 
 .combo-box:focused {
-    -fx-border-color: -fx-accent-color;
+    -fx-border-color: -fx-primary-color;
 }
 
-/* Popup */
 .combo-box .combo-box-popup .list-view {
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: white;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);
     -fx-padding: 5px;
 }
 
 /* TableView */
 .table-view {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 5px;
+    -fx-background-color: white;
+    -fx-border-color: #D3D3D3;
+    -fx-border-radius: 8px;
     -fx-padding: 5px;
-    -fx-border-spacing: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 3);
 }
 
 .table-view .column-header {
-    -fx-background-color: #2196F3;
-    -fx-text-fill: white;
-    -fx-padding: 5px;
+    -fx-background-color: #F5F5F5; /* Light grey header */
+    -fx-text-fill: #333333; /* Dark grey text */
+    -fx-padding: 10px;
     -fx-font-weight: bold;
+    -fx-font-size: 14px;
 }
 
 .table-view .column-header:first-child {
-    -fx-background-radius: 7px 0 0 7px;
+    -fx-background-radius: 8px 0 0 0;
 }
 
 .table-view .column-header:last-child {
-    -fx-background-radius: 0 7px 7px 0;
+    -fx-background-radius: 0 8px 0 0;
 }
 
 .table-view .column-header-background .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #333333;
 }
 
 .table-view .table-cell {
     -fx-border-color: transparent;
-    -fx-padding: 6px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: white;
 }
 
 .table-row-cell:even {
-    -fx-background-color: #e0e0e0;
+    -fx-background-color: #F5F5F5;
 }
 
-/* Выделенный элемент таблицы */
 .table-view:focused .table-row-cell:filled:selected {
     -fx-background-color: -fx-primary-color;
     -fx-text-fill: white;
 }
 
 .header-color .column-header-background {
-    -fx-background-color: #00FF00; /* Зеленый цвет */
+    -fx-background-color: #00FF00;
 }
 
 /* ListView */
 .list-view {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #ccc;
-    -fx-border-radius: 5px;
+    -fx-background-color: white;
+    -fx-border-color: #D3D3D3;
+    -fx-border-radius: 8px;
     -fx-padding: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 3);
 }
 
 .list-view .list-cell {
-    -fx-padding: 5px 10px;
+    -fx-padding: 10px 15px;
     -fx-background-color: transparent;
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
 }
 
 .list-view .list-cell:filled:hover {
@@ -173,31 +174,26 @@
     -fx-text-fill: white;
 }
 
-/* Текстовые поля и ComboBox */
-.text-field, .text-area, .password-field, .combo-box {
-    -fx-background-color: transparent;
-    -fx-border-color: -fx-primary-color;
-    -fx-border-radius: 3px;
-    -fx-padding: 3px 6px;
-    -fx-font-size: 12px;
-    -fx-pref-width: 200px; /* Одинаковая ширина для текстовых полей и комбобокса */
-}
-
 /* DatePicker */
 .date-picker {
+    -fx-background-color: white;
+    /* -fx-border-color: #D3D3D3; */
+    /* -fx-border-radius: 5px; */
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 250px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 2, 0, 0, 0);
+}
+
+
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #D3D3D3;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px 12px;
+    -fx-pref-width: 300px;
+}
+
+.text-area .content {
     -fx-background-color: transparent;
-
-    -fx-border-radius: 3px;
-    -fx-padding: 3px 6px;
-    -fx-font-size: 12px;
-    -fx-pref-width: 200px;
-}
-
-/* Добавляем иконки для некоторых кнопок */
-#createUserButton {
-    -fx-graphic: url("user-add.png");
-}
-
-#deleteUserButton {
-    -fx-graphic: url("user-delete.png");
 }

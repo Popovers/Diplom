@@ -11,7 +11,7 @@
 
 <Pane stylesheets="@style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.diplom.LoginController">
     <children>
-        <VBox alignment="CENTER" layoutX="15.0" layoutY="15.0" spacing="20.0" style="-fx-background-color: #FFFF;">
+        <VBox alignment="CENTER" layoutX="34.0" layoutY="33.0" spacing="20.0" style="-fx-background-color: #FFFF;">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
             </padding>
@@ -24,7 +24,7 @@
             <TextField fx:id="usernameField" promptText="Логин" />
             <PasswordField fx:id="passwordField" promptText="Пароль" />
 
-            <Button onAction="#onLoginButtonClick" prefHeight="26.0" prefWidth="92.0" text="войти" textFill="WHITE" />
+            <Button fx:id="loginButton" onAction="#onLoginButtonClick" prefHeight="26.0" prefWidth="92.0" text="войти" textFill="WHITE" />
         </VBox>
     </children>
 </Pane>

@@ -14,11 +14,12 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 <?stylesheets @style.css?>
 
-<TabPane prefHeight="581.0" prefWidth="1174.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.diplom.AdminController">
+<TabPane prefHeight="581.0" prefWidth="1198.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.diplom.AdminController">
     <Tab closable="false" style="-fx-background-radius: 10px;" text="Пользователи">
-        <Pane onMouseClicked="#handleEmptyClickUser">
+        <Pane onMouseClicked="#handleEmptyClickUser" style="-fx-background-color: #0000;">
             <Label layoutX="377.0" layoutY="6.0" style="-fx-font-weight: bold;" text="Управление пользователями" />
 
             <TextField fx:id="newUsernameField" layoutX="14.0" layoutY="38.0" promptText="Имя пользователя" />
@@ -27,64 +28,102 @@
             <ComboBox fx:id="newUserRoleComboBox" layoutX="638.0" layoutY="34.0" promptText="Выберите роль" />
             <Button fx:id="createUserButton" layoutX="852.0" layoutY="35.0" onAction="#onCreateUserButtonClick" text="Создать" />
 
-            <TableView fx:id="userTableView" layoutX="34.0" layoutY="77.0" prefHeight="332.0" prefWidth="1008.0">
+            <TableView fx:id="userTableView" layoutX="16.0" layoutY="82.0" prefHeight="327.0" prefWidth="667.0">
                 <columns>
-                    <TableColumn fx:id="userIdColumn" prefWidth="28.799987316131592" styleClass="header-color" text="ID" />
-                    <TableColumn fx:id="emailColumn" minWidth="0.0" prefWidth="198.3999481201172" styleClass="header-color" text="Email" />
+                    <TableColumn fx:id="userIdColumn" prefWidth="59.19997787475586" styleClass="header-color" text="ID" />
+                    <TableColumn fx:id="emailColumn" minWidth="0.0" prefWidth="168.80001831054688" styleClass="header-color" text="Email" />
                     <TableColumn fx:id="roleColumn" prefWidth="182.39999389648438" styleClass="header-color" text="Роль" />
-                    <TableColumn fx:id="usernameColumn" prefWidth="214.4000301361084" style="-fx-border-spacing: 100;" styleClass="header-color" text="Имя" />
+                    <TableColumn fx:id="usernameColumn" prefWidth="228.0" style="-fx-border-spacing: 100;" styleClass="header-color" text="Имя" />
                 </columns>
             </TableView>
 
-            <TextField fx:id="editUsernameField" layoutX="65.0" layoutY="420.0" promptText="Новое имя" />
-            <TextField fx:id="editEmailField" layoutX="277.0" layoutY="420.0" promptText="Новый адрес" />
-            <PasswordField fx:id="editPasswordField1" layoutX="489.0" layoutY="420.0" promptText="Новый пароль" />
-            <Button layoutX="711.0" layoutY="418.0" onAction="#onSaveUserChangesButtonClick" text="Сохранить" />
-            <Button layoutX="818.0" layoutY="418.0" onAction="#onDeleteUserButtonClick" text="Удалить" />
+            <TextField fx:id="editUsernameField" layoutX="752.0" layoutY="101.0" promptText="Новое имя" />
+            <TextField fx:id="editEmailField" layoutX="752.0" layoutY="153.0" promptText="Новый адрес" />
+            <PasswordField fx:id="editPasswordField1" layoutX="752.0" layoutY="208.0" promptText="Новый пароль" />
+            <Button layoutX="748.0" layoutY="262.0" onAction="#onSaveUserChangesButtonClick" text="Сохранить" />
+            <Button fx:id="deleteUserButton" layoutX="865.0" layoutY="262.0" onAction="#onDeleteUserButtonClick" text="Удалить" />
             <Button fx:id="cancelButton" layoutX="6.0" layoutY="464.0" onAction="#onCancelButtonClick" text="Назад" />
+            <TextField fx:id="searchUserField" layoutX="177.0" layoutY="433.0" promptText="Введите данные поиска" />
+            <Button layoutX="392.0" layoutY="434.0" mnemonicParsing="false" onAction="#searchUser" text="Поиск" />
         </Pane>
     </Tab>
 
     <Tab closable="false" style="-fx-background-radius: 10px;" text="Проекты">
-        <Pane prefHeight="508.0" prefWidth="1146.0" onMouseClicked="#handleEmptyClick">
-            <Label layoutX="444.0" layoutY="6.0" style="-fx-font-weight: bold;" text="Управление проектами" />
+        <Pane onMouseClicked="#handleEmptyClick" prefHeight="508.0" prefWidth="1146.0">
+            <Label layoutX="460.0" layoutY="14.0" style="-fx-font-weight: bold;" text="Управление проектами">
+                <font>
+                    <Font size="14.0" />
+                </font></Label>
 
-            <TextField fx:id="projectNameField" layoutX="133.0" layoutY="27.0" promptText="Название проекта" />
-            <TextArea fx:id="projectDescriptionArea" layoutX="14.0" layoutY="68.0" prefHeight="196.0" prefRowCount="3" prefWidth="406.0" promptText="Описание проекта" />
-            <DatePicker fx:id="projectStartDatePicker" layoutX="244.0" layoutY="68.0" prefHeight="31.0" prefWidth="209.0" promptText="Дата начала" />
-            <DatePicker fx:id="projectEndDatePicker" layoutX="244.0" layoutY="99.0" prefHeight="31.0" prefWidth="210.0" promptText="Дата окончания" />
-            <TextField fx:id="projectBudgetField" layoutX="250.0" layoutY="154.0" prefHeight="25.0" prefWidth="26.0" promptText="Бюджет" />
-            <Button layoutX="233.0" layoutY="212.0" onAction="#onCreateProjectButtonClick" text="Создать" />
+            <TextField fx:id="projectNameField" layoutX="26.0" layoutY="43.0" promptText="Название проекта" />
+            <TextArea fx:id="projectDescriptionArea" layoutX="26.0" layoutY="90.0" prefHeight="107.0" prefRowCount="3" prefWidth="327.0" promptText="Описание проекта" />
+            <DatePicker fx:id="projectStartDatePicker" layoutX="26.0" layoutY="211.0" prefHeight="31.0" prefWidth="209.0" promptText="Дата начала" />
+            <DatePicker fx:id="projectEndDatePicker" layoutX="26.0" layoutY="277.0" prefHeight="31.0" prefWidth="210.0" promptText="Дата окончания" />
+            <TextField fx:id="projectBudgetField" layoutX="31.0" layoutY="340.0" prefHeight="38.0" prefWidth="310.0" promptText="Бюджет" />
+            <Button layoutX="41.0" layoutY="395.0" onAction="#onCreateProjectButtonClick" text="Создать" />
 
-            <TableView fx:id="projectTableView" layoutX="479.0" layoutY="27.0" prefHeight="430.0" prefWidth="614.0">
+            <TableView fx:id="projectTableView" layoutX="352.0" layoutY="90.0" prefHeight="430.0" prefWidth="832.0">
                 <columns>
                     <TableColumn fx:id="projectIdColumn" text="ID" />
-                    <TableColumn fx:id="projectNameColumn" text="Название" />
-                    <TableColumn fx:id="projectDescriptionColumn" text="Описание" />
-                    <TableColumn fx:id="projectStartDateColumn" prefWidth="105.5999755859375" text="Дата начала" />
-                    <TableColumn fx:id="projectEndDateColumn" prefWidth="105.5999755859375" text="Дата окончания" />
-                    <TableColumn fx:id="projectBudgetColumn" prefWidth="157.5999755859375" text="Бюджет" />
+                    <TableColumn fx:id="projectNameColumn" prefWidth="96.0" text="Название" />
+                    <TableColumn fx:id="projectDescriptionColumn" prefWidth="203.99993896484375" text="Описание" />
+                    <TableColumn fx:id="projectStartDateColumn" prefWidth="108.00006103515625" text="Дата начала" />
+                    <TableColumn fx:id="projectEndDateColumn" prefWidth="135.20001220703125" text="Дата окончания" />
+                    <TableColumn fx:id="projectBudgetColumn" prefWidth="196.0" text="Бюджет" />
                 </columns>
             </TableView>
-            <Button layoutX="309.0" layoutY="212.0" onAction="#updateProject" text="Сохранить" />
-            <Button layoutX="400.0" layoutY="212.0" onAction="#onDeleteProjectButtonClick" text="Удалить" />
+            <Button layoutX="131.0" layoutY="395.0" onAction="#updateProject" text="Сохранить" />
+            <Button layoutX="250.0" layoutY="395.0" onAction="#onDeleteProjectButtonClick" text="Удалить" />
+            <TextField fx:id="searchField" layoutX="669.0" layoutY="43.0" prefHeight="38.0" prefWidth="208.0" promptText="Введите данные для поиска" />
+            <Button layoutX="920.0" layoutY="44.0" mnemonicParsing="false" onAction="#searchProject" text="Найти" />
         </Pane>
     </Tab>
 
     <Tab closable="false" style="-fx-background-radius: 10px;" text="Ресурсы">
-        <Pane>
+        <Pane onMouseClicked="#handleEmptyClickProject">
             <Label layoutX="349.0" layoutY="14.0" style="-fx-font-weight: bold;" text="Управление ресурсами" />
+            <ComboBox fx:id="specialistComboBox" layoutX="17.0" layoutY="54.0" prefHeight="47.0" prefWidth="268.0" promptText="Выберите специалиста" />
+            <Button layoutX="417.0" layoutY="60.0" onAction="#assignSpecialists" text="Назначить специалиста" />
 
-            <ComboBox fx:id="specialistComboBox" layoutX="17.0" layoutY="54.0" promptText="Выберите специалиста" />
-            <Button layoutX="248.0" layoutY="56.0" onAction="#assignSpecialists" text="Назначить специалиста" />
-
-            <ListView fx:id="projectRequestListView" layoutX="17.0" layoutY="102.0" prefHeight="217.0" prefWidth="912.0" />
+            <ListView fx:id="projectRequestListView" layoutX="143.0" layoutY="122.0" prefHeight="217.0" prefWidth="912.0" />
+            <Button fx:id="generateReportButton" layoutX="627.0" layoutY="60.0" onAction="#generateReport" text="Сгенерировать отчет" />
         </Pane>
     </Tab>
-    <Tab closable="false" style="-fx-background-radius: 10px;" text="Отчеты">
-        <Pane>
-            <Label layoutX="513.0" layoutY="14.0" style="-fx-font-weight: bold;" text="Управление данными" />
-            <Button fx:id="generateReportButton" layoutX="513.0" layoutY="232.0" onAction="#generateReport" text="Сгенерировать отчет" />
+
+    <Tab closable="false" style="-fx-background-radius: 10px;" text="Специалисты">
+        <Pane onMouseClicked="#handleEmptyClickSpecialist">
+            <Label layoutX="450.0" layoutY="14.0" style="-fx-font-weight: bold;" text="Управление специалистами">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+
+            <TableView fx:id="specialistTableView" layoutX="26.0" layoutY="43.0" prefHeight="378.0" prefWidth="687.0">
+                <columns>
+                    <TableColumn fx:id="specialistIdColumn" text="ID" />
+                    <TableColumn fx:id="firstNameColumn" text="Имя" />
+                    <TableColumn fx:id="lastNameColumn" text="Фамилия" />
+                    <TableColumn fx:id="middleNameColumn" text="Отчество" />
+                    <TableColumn fx:id="contactInfoColumn" text="Контактная информация" />
+                    <TableColumn fx:id="hoursColumn" text="Доступные часы" />
+                </columns>
+            </TableView>
+
+            <TextField fx:id="editHoursField" layoutX="717.0" layoutY="267.0" promptText="Новые доступные часы" />
+            <Button layoutX="939.0" layoutY="268.0" onAction="#onSaveSpecialistChangesButtonClick" text="Сохранить" />
+            <Button fx:id="cancelSpecialistButton" layoutX="809.0" layoutY="464.0" onAction="#onCancelButtonClick" text="Назад" />
+            <TextField fx:id="searchSpecialistField" layoutX="170.0" layoutY="426.0" promptText="Введите данные для поиска" />
+            <Button layoutX="413.0" layoutY="427.0" mnemonicParsing="false" onAction="#searchSpecialist" text="Поиск" />
+
+            <!-- New TableView for displaying the projects a specialist is involved in -->
+            <TableView fx:id="specialistProjectsTableView" layoutX="717.0" layoutY="43.0" prefHeight="200.0" prefWidth="481.0">
+                <columns>
+                    <TableColumn fx:id="projectIdCol" prefWidth="39.20001220703125" text="ID" />
+                    <TableColumn fx:id="projectNameCol" prefWidth="147.199951171875" text="Название проекта" />
+                    <TableColumn fx:id="projectStartDateCol" prefWidth="116.7999267578125" text="Дата начала" />
+                    <TableColumn fx:id="projectEndDateCol" minWidth="0.0" prefWidth="165.60003662109375" text="Дата окончания" />
+                </columns>
+            </TableView>
         </Pane>
     </Tab>
 

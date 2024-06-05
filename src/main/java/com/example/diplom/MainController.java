@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.io.IOException;
 import java.sql.*;
@@ -16,11 +18,14 @@ import java.util.Optional;
 
 public class MainController {
 
-    @FXML
-    private ListView<String> projectListView;
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/fors1";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "r10270707";
 
     @FXML
-    private Button cancelButton; // Добавили ссылку на кнопку "Назад"
+    private ListView<String> projectListView;
+    @FXML
+    private Button cancelButton;
     @FXML
     private ListView<String> requestListView;
 
@@ -32,11 +37,12 @@ public class MainController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+
     @FXML
     private void onLeaveRequestButtonClick() {
-        // Показываем форму заявки на ресурсы
         HelloApplication.showLeaveRequestForm();
     }
+
     @FXML
     private void initialize() {
         loadProjects();
@@ -44,82 +50,134 @@ public class MainController {
     }
 
     private void loadProjects() {
-        // Загрузка списка проектов из базы данных
-        String url = "jdbc:mysql://localhost:3306/fors";
-        String username = "root";
-        String password = "r10270707";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        projectList.clear();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT name FROM projects")) {
             while (resultSet.next()) {
-                String projectName = resultSet.getString("name");
-                projectList.add(projectName);
+                projectList.add(resultSet.getString("name"));
             }
         } catch (SQLException e) {
-            System.err.println("Ошибка при загрузке проектов: " + e.getMessage());
+            showError("Ошибка при загрузке проектов: " + e.getMessage());
         }
-
         projectListView.setItems(projectList);
     }
 
     private void loadRequests() {
-        // Загрузка списка заявок из базы данных
-        String url = "jdbc:mysql://localhost:3306/fors";
-        String username = "root";
-        String password = "r10270707";
+        requestList.clear();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            String query = "SELECT p.id AS project_id, p.name AS project_name, r.name AS role_name, " +
+                    "ps.start_date, ps.end_date, r.id AS role_id " +
+                    "FROM projects p " +
+                    "JOIN project_specialists ps ON p.id = ps.project_id " +
+                    "JOIN roles r ON ps.role_id = r.id " +
+                    "WHERE ps.specialist_id IS NULL";
+            try (PreparedStatement statement = connection.prepareStatement(query);
+                 ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int projectId = resultSet.getInt("project_id");
+                    String projectName = resultSet.getString("project_name");
+                    String roleName = resultSet.getString("role_name");
+                    Date startDate = resultSet.getDate("start_date");
+                    Date endDate = resultSet.getDate("end_date");
+                    int roleId = resultSet.getInt("role_id");
 
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM project_specialists")) {
-            while (resultSet.next()) {
-                int projectId = resultSet.getInt("project_id");
-                int specialistId = resultSet.getInt("specialist_id");
-                int roleId = resultSet.getInt("role_id");
-                Date startDate = resultSet.getDate("start_date");
-                Date endDate = resultSet.getDate("end_date");
-
-                String requestInfo = "Проект: " + projectId + ", Специалист: " + specialistId + ", Роль: " + roleId +
-                        ", Начало: " + startDate + ", Окончание: " + endDate;
-                requestList.add(requestInfo);
+                    String requestInfo = String.format("Проект: %d (%s), Роль: %s (ID: %d), Начало: %s, Окончание: %s",
+                            projectId, projectName, roleName, roleId, startDate, endDate);
+                    requestList.add(requestInfo);
+                }
             }
         } catch (SQLException e) {
-            System.err.println("Ошибка при загрузке заявок: " + e.getMessage());
+            showError("Ошибка при загрузке заявок: " + e.getMessage());
         }
-
         requestListView.setItems(requestList);
     }
 
     @FXML
     private void onViewProjectButtonClick() {
-        int selectedIndex = projectListView.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0) {
-            String selectedProject = projectList.get(selectedIndex);
+        String selectedProject = projectListView.getSelectionModel().getSelectedItem();
+        if (selectedProject != null) {
             showProjectDetails(selectedProject);
         }
     }
 
     private void showProjectDetails(String projectName) {
-        // Код для показа деталей выбранного проекта
-        System.out.println("Выбран проект: " + projectName);
-    }
+        try {
+            // Загрузка данных о проекте из базы данных
+            String query = "SELECT * FROM projects WHERE name = ?";
+            try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, projectName);
+                ResultSet resultSet = statement.executeQuery();
 
+                if (resultSet.next()) {
+                    // Создание строки с информацией о проекте
+                    String projectInfo = String.format(
+                            "Название: %s\nОписание: %s\nДата начала: %s\nДата окончания: %s\nБюджет: %d",
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getDate("start_date"),
+                            resultSet.getDate("end_date"),
+                            resultSet.getInt("budget")
+                    );
 
-
-    private void showRequestForm(String projectName) {
-        // Код для показа формы заявки на ресурсы проекта
-        System.out.println("Оставление заявки на проект: " + projectName);
+                    // Отображение информации о проекте в диалоговом окне
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Информация о проекте");
+                    alert.setHeaderText(null);
+                    alert.setContentText(projectInfo);
+                    alert.showAndWait();
+                } else {
+                    showError("Проект не найден.");
+                }
+            }
+        } catch (SQLException e) {
+            showError("Ошибка при загрузке данных о проекте: " + e.getMessage());
+        }
     }
 
     @FXML
     private void onCancelRequestButtonClick() {
-        int selectedIndex = requestListView.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0) {
-            String selectedRequest = requestList.get(selectedIndex);
-            cancelRequest(selectedRequest);
+        String selectedRequest = requestListView.getSelectionModel().getSelectedItem();
+        if (selectedRequest != null) {
+            // Показать диалоговое окно подтверждения
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Подтверждение отмены заявки");
+            alert.setHeaderText(null);
+            alert.setContentText("Вы уверены, что хотите отменить эту заявку?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK){
+                // Пользователь нажал OK, отменяем заявку
+                cancelRequest(selectedRequest);
+            }
         }
     }
 
+    private void cancelRequest(String requestInfo) {
+        try {
+            // Извлекаем ID проекта из строки requestInfo
+            int projectId = Integer.parseInt(requestInfo.substring(requestInfo.indexOf("Проект: ") + 8, requestInfo.indexOf(" (")));
+
+            // Удаляем заявку из базы данных
+            String query = "DELETE FROM project_specialists WHERE project_id = ? AND specialist_id IS NULL";
+            try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, projectId);
+                int rowsAffected = statement.executeUpdate();
+                if (rowsAffected > 0) {
+                    // Заявка успешно удалена, обновляем список заявок
+                    loadRequests();
+                } else {
+                    showError("Ошибка при отмене заявки: заявка не найдена.");
+                }
+            }
+        } catch (SQLException e) {
+            showError("Ошибка при отмене заявки: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            showError("Ошибка при отмене заявки: не удалось извлечь ID проекта.");
+        }
+    }
 
     private void openLoginWindow() {
         try {
@@ -129,22 +187,28 @@ public class MainController {
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            System.err.println("Ошибка при открытии окна авторизации: " + e.getMessage());
+            showError("Ошибка при открытии окна авторизации: " + e.getMessage());
         }
     }
 
-
     @FXML
     private void onCancelButtonClick() {
-        // Закрытие окна формы без сохранения данных
-//        stage.close();
-        openLoginWindow();
+        // Получаем ссылку на Stage из кнопки
         Stage stage = (Stage) cancelButton.getScene().getWindow();
-        stage.close();
 
+        // Открываем окно авторизации
+        openLoginWindow();
+
+        // Закрываем текущее окно
+        stage.close();
     }
-    private void cancelRequest(String requestInfo) {
-        // Код для отмены выбранной заявки
-        System.out.println("Отмена заявки: " + requestInfo);
+
+    private void showError(String message) {
+        // TODO: Реализовать отображение сообщения об ошибке
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
