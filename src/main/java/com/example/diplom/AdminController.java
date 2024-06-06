@@ -11,6 +11,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.control.DatePicker;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.io.IOException;
 import java.sql.*;
@@ -674,10 +676,13 @@ public class AdminController {
                         // Вычисляем количество дней работы
                         long days = ChronoUnit.DAYS.between(startDate, endDate);
 
+                        // Вычисляем рабочие часы между начальной и конечной датами
+                        int workingHours = calculateWorkingHours(startDate, endDate);
+
                         // Обновляем количество часов в таблице specialists
                         String updateHoursQuery = "UPDATE specialists SET hours =hours + ? WHERE id = ?";
                         try (PreparedStatement updateStatement = connection.prepareStatement(updateHoursQuery)) {
-                            updateStatement.setInt(1, (int) (days * 8)); // Добавляем по 8 часов за каждый день
+                            updateStatement.setInt(1, workingHours);
                             updateStatement.setInt(2, specialistId);
                             updateStatement.executeUpdate();
                         }
@@ -696,6 +701,18 @@ public class AdminController {
             logger.log(Level.SEVERE, "Ошибка при добавлении специалиста к проекту", e);
             showErrorDialog("Ошибка при добавлении специалиста к проекту: " + e.getMessage());
         }
+    }
+
+    private int calculateWorkingHours(LocalDate startDate, LocalDate endDate) {
+        long days = ChronoUnit.DAYS.between(startDate, endDate);
+        int workingHours = 0;
+        for (int i = 0; i <= days; i++) {
+            LocalDate currentDate = startDate.plusDays(i);
+            if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                workingHours += 8; // Добавляем 8 часов за каждый рабочий день
+            }
+        }
+        return workingHours;
     }
     // Обработчик нажатия на пустую область ListView
     @FXML
@@ -835,7 +852,7 @@ public class AdminController {
         specialistProjectsTableView.getItems().clear();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT p.id, p.name, p.start_date, p.end_date " +
+                    "SELECT p.id, p.name, ps.start_date, ps.end_date " +
                             "FROM projects p " +
                             "JOIN project_specialists ps ON p.id = ps.project_id " +
                             "WHERE ps.specialist_id = ?")) {
@@ -968,7 +985,7 @@ public class AdminController {
                 specialistComboBox.setItems(loadSpecialistsByRole(newValue.getRoleId()));
             }
         });
-
+        editHoursField.setEditable(false); // Делает поле некликабельным
         // Настраиваем столбцы таблицы проектов
         projectIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         projectNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -998,7 +1015,6 @@ public class AdminController {
         loadProjectData();
         loadProjectRequests();
         loadSpecialistsData();
-//        loadSpecialistProjects();
         projectRequestListView.setItems(projectRequests);
 
         // Обработчик для выбора строки в таблице
@@ -1009,6 +1025,28 @@ public class AdminController {
             } else {
                 editHoursField.clear(); // Очистка поля для редактирования
                 specialistProjectsTableView.getItems().clear();
+            }
+        });
+        // Обработчик для выбора строки в таблице проектов
+        specialistProjectsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Загрузка количества часов в выбранном проекте в текстовое поле
+                editHoursField.setText(String.valueOf(newValue.getHours()));
+            } else {
+                // Если нет выбранного проекта, очистить текстовое поле
+                editHoursField.clear();
+            }
+            });
+        // Обработчик для выбора строки в таблице проектов специалиста
+        specialistProjectsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                ProjectSp selectedProject = newValue;
+                int hours = selectedProject.getHours();
+                // Загрузка количества часов в выбранном проекте в текстовое поле
+                editHoursField.setText(String.valueOf(hours));
+            } else {
+                // Если нет выбранного проекта, очистить текстовое поле
+                editHoursField.clear();
             }
         });
     }

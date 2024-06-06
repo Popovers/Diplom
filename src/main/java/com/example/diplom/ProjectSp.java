@@ -7,6 +7,7 @@ public class ProjectSp {
     private String projectName;
     private LocalDate startDate;
     private LocalDate endDate;
+    private int hours;
 
     // Конструктор
     public ProjectSp(int projectId, String projectName, LocalDate startDate, LocalDate endDate) {
@@ -37,6 +38,10 @@ public class ProjectSp {
         return startDate;
     }
 
+    public int getHours() {
+        return hours;
+    }
+
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
@@ -47,5 +52,9 @@ public class ProjectSp {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
     }
 }

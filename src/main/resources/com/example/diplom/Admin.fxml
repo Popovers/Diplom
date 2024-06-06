@@ -122,6 +122,7 @@
                     <TableColumn fx:id="projectNameCol" prefWidth="147.199951171875" text="Название проекта" />
                     <TableColumn fx:id="projectStartDateCol" prefWidth="116.7999267578125" text="Дата начала" />
                     <TableColumn fx:id="projectEndDateCol" minWidth="0.0" prefWidth="165.60003662109375" text="Дата окончания" />
+                    <TableColumn fx:id="projectHoursCol" prefWidth="80.0" text="Часы" /> <!-- Новый столбец -->
                 </columns>
             </TableView>
         </Pane>
