@@ -127,6 +127,8 @@ public class AdminController {
     private TableColumn<ProjectSp, LocalDate> projectStartDateCol;
     @FXML
     private TableColumn<ProjectSp, LocalDate> projectEndDateCol;
+    @FXML
+    private TableColumn<ProjectSp, Integer> projectHoursCol;
 
     // Константа для подключения к базе данных
     private static final String DB_URL = "jdbc:mysql://localhost:3306/fors1";
@@ -851,11 +853,19 @@ public class AdminController {
     public void loadSpecialistProjects(int specialistId) {
         specialistProjectsTableView.getItems().clear();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT p.id, p.name, ps.start_date, ps.end_date " +
-                            "FROM projects p " +
-                            "JOIN project_specialists ps ON p.id = ps.project_id " +
-                            "WHERE ps.specialist_id = ?")) {
+            String query = "SELECT p.id, p.name, ps.start_date, ps.end_date, " +
+                    "SUM(DATEDIFF(ps.end_date, ps.start_date) * 8 - " +
+                    "(DATEDIFF(ps.end_date, ps.start_date) DIV 7 * 2 * 8) - " +
+                    "CASE " +
+                    "WHEN WEEKDAY(ps.end_date) = 5 THEN 8 " +
+                    "WHEN WEEKDAY(ps.end_date) = 6 THEN 8 " +
+                    "ELSE 0 " +
+                    "END) AS hours_worked " +
+                    "FROM projects p " +
+                    "JOIN project_specialists ps ON p.id = ps.project_id " +
+                    "WHERE ps.specialist_id = ? " +
+                    "GROUP BY p.id, p.name, ps.start_date, ps.end_date";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setInt(1, specialistId);
                 ResultSet resultSet = statement.executeQuery();
                 ObservableList<ProjectSp> projects = FXCollections.observableArrayList();
@@ -864,7 +874,8 @@ public class AdminController {
                             resultSet.getInt("id"),
                             resultSet.getString("name"),
                             resultSet.getDate("start_date").toLocalDate(),
-                            resultSet.getDate("end_date").toLocalDate()
+                            resultSet.getDate("end_date").toLocalDate(),
+                            resultSet.getInt("hours_worked") // Исправлено на "hours_worked"
                     );
                     projects.add(project);
                 }
@@ -1008,6 +1019,8 @@ public class AdminController {
         projectNameCol.setCellValueFactory(new PropertyValueFactory<>("projectName"));
         projectStartDateCol.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         projectEndDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        projectHoursCol.setCellValueFactory(new PropertyValueFactory<>("hours")); // Инициализация нового столбца
+
 
         // Загружаем данные в таблицы и комбобоксы
         loadRolesInComboBox();

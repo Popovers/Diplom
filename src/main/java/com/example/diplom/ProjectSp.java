@@ -7,14 +7,15 @@ public class ProjectSp {
     private String projectName;
     private LocalDate startDate;
     private LocalDate endDate;
-    private int hours;
+    private int hours; // Добавлено поле hours
 
     // Конструктор
-    public ProjectSp(int projectId, String projectName, LocalDate startDate, LocalDate endDate) {
+    public ProjectSp(int projectId, String projectName, LocalDate startDate, LocalDate endDate, int hours) {
         this.projectId = projectId;
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.hours = hours; // Инициализируется поле hours
     }
 
     // Геттеры и сеттеры
@@ -38,10 +39,6 @@ public class ProjectSp {
         return startDate;
     }
 
-    public int getHours() {
-        return hours;
-    }
-
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
@@ -52,6 +49,10 @@ public class ProjectSp {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public int getHours() {
+        return hours;
     }
 
     public void setHours(int hours) {
