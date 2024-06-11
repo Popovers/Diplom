@@ -828,9 +828,18 @@ public class AdminController {
         specialistTableView.getItems().clear();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT s.id, s.first_name, s.last_name, s.middle_name, s.contact_info, s.hours " +
+                    "SELECT s.id, s.first_name, s.last_name, s.middle_name, s.contact_info, " +
+                            "(SELECT SUM(DATEDIFF(ps.end_date, ps.start_date) * 8 - " +
+                            "(DATEDIFF(ps.end_date, ps.start_date) DIV 7 * 2 * 8) - " +
+                            "CASE " +
+                            "WHEN WEEKDAY(ps.end_date) = 5 THEN 8 " +
+                            "WHEN WEEKDAY(ps.end_date) = 6 THEN 8 " +
+                            "ELSE 0 " +
+                            "END) " +
+                            "FROM project_specialists ps WHERE ps.specialist_id = s.id) AS hours " +
                             "FROM specialists s")) {
                 ResultSet resultSet = statement.executeQuery();
+                ObservableList<Specialist> specialists = FXCollections.observableArrayList();
                 while (resultSet.next()) {
                     Specialist specialist = new Specialist(
                             resultSet.getInt("id"),
@@ -840,8 +849,9 @@ public class AdminController {
                             resultSet.getString("contact_info"),
                             resultSet.getInt("hours")
                     );
-                    specialistTableView.getItems().add(specialist);
+                    specialists.add(specialist);
                 }
+                specialistTableView.setItems(specialists);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Ошибка при загрузке данных о специалистах", e);
